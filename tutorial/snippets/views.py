@@ -45,8 +45,18 @@ class JSONResponse(HttpResponse):
         return HttpResponse(status=404)
 
     if request.method == "GET":
+        serializer = SnippetSerializer(snippet)
+        return JSONResponse(serializer.data)
 
     elif request.method == "PUT":
+        data = JSONParser().parse(request)
+        serializer = SnippetSerializer(snippet, data=data)
+        if serializer.is_valid():
+            serializer.save()
+            return JSONResponse(serializer.data)
+        return JSONResponse(serializer.errors, status=400)
 
     elif request.method == "DELETE":
+        snippet.delete()
+        return HttpResponse(status=204)
 
